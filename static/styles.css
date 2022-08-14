@@ -72,3 +72,11 @@ section>div{
   padding: 15px;
   font-size:  1.3em;
 }
+
+a:hover{
+background-color: #607369;
+}
+
+a{
+text-decoration: none;	
+}
