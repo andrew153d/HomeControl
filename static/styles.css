@@ -73,10 +73,15 @@ section>div{
   font-size:  1.3em;
 }
 
+div>a{
+  display: block;
+  text-decoration: none;
+  height:  100%;
+  color:  #000000;
+}
+
+
 a:hover{
 background-color: #607369;
 }
-
-a{
-text-decoration: none;	
-}
+  
