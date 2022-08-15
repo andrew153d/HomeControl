@@ -18,24 +18,21 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 #define actuators GPIOs
-ledRed = 13
-ledYlw = 19
-ledGrn = 26
+ledYlw = 26
+currentMode = 'A'
+
 
 #initialize GPIO status variables
-ledRedSts = 0
 ledYlwSts = 0
-ledGrnSts = 0
+
 
 # Define led pins as output
-GPIO.setup(ledRed, GPIO.OUT)   
+
 GPIO.setup(ledYlw, GPIO.OUT) 
-GPIO.setup(ledGrn, GPIO.OUT) 
+
 
 # turn leds OFF 
-GPIO.output(ledRed, GPIO.LOW)
 GPIO.output(ledYlw, GPIO.LOW)
-GPIO.output(ledGrn, GPIO.LOW)
 
 mqtt_client = mqtt.Client()
 
@@ -52,45 +49,41 @@ def on_message(client, userdata, msg):
 @app.route("/")
 def index():
 	# Read Sensors Status
-	ledRedSts = GPIO.input(ledRed)
 	ledYlwSts = GPIO.input(ledYlw)
-	ledGrnSts = GPIO.input(ledGrn)
+	
 
 	templateData = {
               'title' : 'GPIO output Status!',
-              'ledRed'  : ledRedSts,
               'ledYlw'  : ledYlwSts,
-              'ledGrn'  : ledGrnSts,
+              'mode'    : currentMode,
         }
 	return render_template('index.html', **templateData)
 	
 @app.route("/<deviceName>/<action>")
 def action(deviceName, action):
-	if deviceName == 'ledRed':
-		actuator = ledRed
+	global currentMode
 	if deviceName == 'ledYlw':
-		actuator = ledYlw
+		if action == 'on':
+			GPIO.output(ledYlw, GPIO.HIGH)
+		if action == 'off':
+			GPIO.output(ledYlw, GPIO.LOW)
 		mqtt_client.connect(MQTT_ADDRESS, 1883)
-	if deviceName == 'ledGrn':
-		actuator = ledGrn
-		if action == "on":
+	if deviceName == 'switchMode':
+		if currentMode == 'A':
+			currentMode = 'B'
 			mqtt_client.publish(MQTT_TOPIC, "B100000000")
-		if action == "off":
+		elif currentMode == 'B':
+			currentMode = 'A'
 			mqtt_client.publish(MQTT_TOPIC, "A000050100")
-   
-	if action == "on":
-		GPIO.output(actuator, GPIO.HIGH)
-	if action == "off":
-		GPIO.output(actuator, GPIO.LOW)
-		     
-	ledRedSts = GPIO.input(ledRed)
+		else:
+			currentMode = 'A'
+	else:
+		currentMode = 'A'
+
 	ledYlwSts = GPIO.input(ledYlw)
-	ledGrnSts = GPIO.input(ledGrn)
-   
 	templateData = {
-              'ledRed'  : ledRedSts,
               'ledYlw'  : ledYlwSts,
-              'ledGrn'  : ledGrnSts,
+              'mode'    : currentMode,
 	}
 	return render_template('index.html', **templateData)
 

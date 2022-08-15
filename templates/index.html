@@ -25,11 +25,7 @@
         <article>
           <h4 class="text-center">Desk Leds</h4>
             <div  class = "innerButtons">
-              {% if  ledGrn   == 1 %}
-                <a href="/ledGrn/off"class="linkButton" id="YlwBtn">OFF</a>
-              {% else %}
-                <a href="/ledGrn/on" class="linkButton" id="YlwBtn">ON</a> 
-              {% endif %}
+                <a href="/switchMode/on"class="linkButton" id="GrnBtn">{{mode}}</a>
               <!--
               <a href = "/ledGrn/on" class = "linkButton" id="YlwBtn">
                 ON
@@ -38,9 +34,9 @@
             </div>
             <div  class = "innerButtons">
               {% if  ledYlw   == 1 %}
-                <a href="/ledYlw/off"class="linkButton" id="GrnBtn">OFF</a>
+                <a href="/ledYlw/off"class="linkButton" id="YlwBtn">OFF</a>
               {% else %}
-                <a href="/ledYlw/on" class="linkButton" id="GrnBtn">ON</a> 
+                <a href="/ledYlw/on" class="linkButton" id="YlwBtn">ON</a> 
               {% endif %} 
 		<!--
 	      <a href = "/ledYlw/on" class = "linkButton" id="GrnBtn">
