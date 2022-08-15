@@ -37,9 +37,16 @@
               -->
             </div>
             <div  class = "innerButtons">
-              <a href = "/ledGrn/on" class = "linkButton" id="GrnBtn">
+              {% if  ledYlw   == 1 %}
+                <a href="/ledYlw/off"class="linkButton" id="GrnBtn">OFF</a>
+              {% else %}
+                <a href="/ledYlw/on" class="linkButton" id="GrnBtn">ON</a> 
+              {% endif %} 
+		<!--
+	      <a href = "/ledYlw/on" class = "linkButton" id="GrnBtn">
                 ON
-              </a> 
+              </a>
+		--> 
             </div> 
             <div class = "innerButtons">
               Device Command
