@@ -25,25 +25,21 @@
         <article>
           <h4 class="text-center">Desk Leds</h4>
             <div  class = "innerButtons">
-                <a href="/switchMode/on"class="linkButton" id="GrnBtn">{{mode}}</a>
-              <!--
-              <a href = "/ledGrn/on" class = "linkButton" id="YlwBtn">
-                ON
-              </a> 
-              -->
-            </div>
-            <div  class = "innerButtons">
-              {% if  ledYlw   == 1 %}
-                <a href="/ledYlw/off"class="linkButton" id="YlwBtn">OFF</a>
-              {% else %}
-                <a href="/ledYlw/on" class="linkButton" id="YlwBtn">ON</a> 
-              {% endif %} 
-		<!--
-	      <a href = "/ledYlw/on" class = "linkButton" id="GrnBtn">
-                ON
-              </a>
-		--> 
+          	   <a href = "/ledYlw/toggle" class = "wideButton" id="powerBtn">{{ledYlwSts}}</a>
+               <a href = "/connect/connect" class = "wideButton" id="connBtn">{{ConnSts}}</a>
             </div> 
+            <div  class = "innerButtons">
+                <a href="/switchMode/on"class="nrwButton" id="GrnBtn">{{mode}}</a>
+                  <form action = "/data" class = "nrwButton" id = "RedIn" method = "POST">
+                    <input type="text" class = "input" maxlength="3" max="255" name = "red_field">
+                  </form>
+                  <form action = "/data" class = "nrwButton" id = "GrnIn" method = "POST">
+                    <input type="text" class = "input" maxlength="3" max="255" name = "grn_field">
+                  </form>
+                  <form action = "/data" class = "nrwButton" id = "BluIn" method = "POST">
+                    <input type="text" class = "input" maxlength="3" max="255">
+                  </form>
+            </div>
             <div class = "innerButtons">
               Device Command
             </div>

@@ -3,6 +3,7 @@ body {
 	color:  #000000;
 	background-color: #a7cea8;
 	font-family: 'oxygen', sans-serif;
+
 }
 
 /* HEADER */
@@ -74,7 +75,7 @@ section>div{
 }
 
 
-.linkButton{
+.nrwButton{
 
   display: block;
   text-decoration: none;
@@ -84,7 +85,67 @@ section>div{
   padding:  10px;
   text-align:  center;
   border-radius:  25px;
+  text-overflow: clip;
+  white-space: nowrap;
+  overflow: hidden;
+  float:  left;
+  margin-left:  15px;
+}
+
+.wideButton{
+
+  display: block;
+  text-decoration: none;
+  height:  50px;
+  width:  100px;
+  color:  #000000;
+  padding:  10px;
+  text-align:  center;
+  border-radius:  25px;
+  text-overflow: clip;
+  white-space: nowrap;
+  overflow: hidden;
+  float:  left;
+  margin-left:  23px;
+}
  
+#RedIn{
+  background-color:red;
+  font-size:15px;
+  padding:  14px 0px 0px 0px;
+}
+#GrnIn{
+  background-color:green;
+  font-size:15px;
+  padding:  14px 0px 0px 0px;
+}
+#BluIn{
+  background-color:blue;
+  font-size:15px;
+  padding:  14px 0px 0px 0px;
+}
+
+input[type="text"]{
+  width:  40px;
+  border-radius: 7px;
+  border-width:  0px;
+}
+
+#powerBtn{
+  background-color: #f06000;
+}
+#powerBtn:hover{
+  text-decoration: none;
+  color:  #000000;
+  background-color: #ff6900;
+}
+#connBtn{
+  background-color: #f06000;
+}
+#connBtn:hover{
+  text-decoration: none;
+  color:  #000000;
+  background-color: #ff6900;
 }
 
 #GrnBtn{
@@ -100,8 +161,6 @@ section>div{
   color:  #000000;
   background-color: #fccb00;
 }
-
-
 
 #GrnBtn:hover{
   text-decoration: none;
