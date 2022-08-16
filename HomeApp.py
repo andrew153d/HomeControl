@@ -24,9 +24,13 @@ currentMode = 'A'
 
 #initialize GPIO status variables
 ledYlwSts = 0
-redValu = 0
-grnValu = 0
-bluValu = 0
+
+redValu = '0'
+grnValu = '0'
+bluValu = '0'
+
+connSts = "Disconnected"
+powerSts = "OFF"
 
 # Define led pins as output
 
@@ -53,37 +57,57 @@ def on_message(client, userdata, msg):
     """The callback for when a PUBLISH message is received from the server."""
     print(msg.topic + ' ' + str(msg.payload))
 
-def getstr(input):
-	msg = ''
-	if int(input) < 10:
-		msg+='0'
-	if int(input) < 100:
-		msg+='0'
-	msg+=input
-	return msg
+def sendColors():
+
+	def getStr(input):
+		msg = ''
+		if int(input) < 10:
+			msg+='0'
+		if int(input) < 100:
+			msg+='0'
+		msg+=input
+		return msg
+
+	global redValu
+	global grnValu
+	global bluValu
+	global currentMode
+	msg = currentMode
+	msg+=getStr(redValu)
+	msg+=getStr(grnValu)
+	msg+=getStr(bluValu)
+	mqtt_client.publish(MQTT_TOPIC, msg)
 
 
-@app.route('/data', methods = ['POST', 'GET'])
-def data():
+@app.route('/data/<color>', methods = ['POST', 'GET'])
+def data(color):
 	global form_data
+	global powerSts
+	global connStatus
+	global redValu
+	global grnValu
+	global bluValu
 	msg = currentMode
 	if request.method == 'GET':
 		return f"The URL /data is accessed directly. Try going to '/form' to submit form"
 	if request.method == 'POST':
 		form_data = request.form
-		red = form_data['red_field']
-		msg += getstr(red)
-		grn = form_data['grn_field']
-		msg += getstr(grn)
-		blu = form_data['blu_field']
-		msg+= getstr(blu)
-		mqtt_client.publish(MQTT_TOPIC, msg)
+		if color == 'red':
+			redValu = form_data['field']
+		if color == 'grn':
+			grnValu = form_data['field']
+		if color == 'blu':
+			bluValu = form_data['field']
 
-
-
-
+		sendColors()
 	templateData = {
 		'mode':currentMode,
+		'redValu':redValu,
+		'grnValu':grnValu,
+		'bluValu':bluValu,
+		'powerSts':powerSts,
+		'connSts':connSts,
+		
 	}
 	return render_template('index.html',**templateData)
 
@@ -99,29 +123,47 @@ def index():
 	
 @app.route("/<deviceName>/<action>")
 def action(deviceName, action):
+	global redValu
+	global grnValu
+	global bluValu
 	global currentMode
-	if deviceName == 'ledYlw':
-		if action == 'on':
-			GPIO.output(ledYlw, GPIO.HIGH)
-		if action == 'off':
-			GPIO.output(ledYlw, GPIO.LOW)
-		mqtt_client.connect(MQTT_ADDRESS, 1883)
+	global powerSts
+	global connSts
+	if deviceName == 'connSts':
+		if action == 'conn':
+			if connSts == "Disconnected":
+				connSts = "Connected"
+				mqtt_client.connect(MQTT_ADDRESS, 1883)
+				GPIO.output(ledYlw, GPIO.HIGH)
+			elif connSts == "Connected":
+				connSts = "Disconnected"
+				GPIO.output(ledYlw, GPIO.LOW)
+			print(connSts == "Disconnected")
+	if deviceName == 'powerSts':
+		if action == 'toggle':
+			if powerSts == "ON":
+				powerSts = "OFF"
+				redValu = '0'
+				grnValu = '0'
+				bluValu = '0'
+				sendColors()
+			elif powerSts == "OFF":
+				powerSts = "ON"
 	if deviceName == 'switchMode':
-		if currentMode == 'A':
-			currentMode = 'B'
-			mqtt_client.publish(MQTT_TOPIC, "B100000000")
-		elif currentMode == 'B':
+		currentMode = chr(ord(currentMode)+1)
+		if currentMode == 'G':
 			currentMode = 'A'
-			mqtt_client.publish(MQTT_TOPIC, "A000050100")
-		else:
-			currentMode = 'A'
-	else:
-		currentMode = 'A'
+		sendColors()
 
 	ledYlwSts = GPIO.input(ledYlw)
 	templateData = {
               'ledYlw'  : ledYlwSts,
               'mode'    : currentMode,
+              'redValu' : redValu,
+              'grnValu' : grnValu,
+              'bluValu' : bluValu,
+              'connSts' : connSts,
+              'powerSts': powerSts,
 	}
 	return render_template('index.html', **templateData)
 

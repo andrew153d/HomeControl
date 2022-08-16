@@ -141,6 +141,7 @@ input[type="text"]{
 }
 #connBtn{
   background-color: #f06000;
+  font-size: 14px;
 }
 #connBtn:hover{
   text-decoration: none;

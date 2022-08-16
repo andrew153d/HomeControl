@@ -25,19 +25,19 @@
         <article>
           <h4 class="text-center">Desk Leds</h4>
             <div  class = "innerButtons">
-          	   <a href = "/ledYlw/toggle" class = "wideButton" id="powerBtn">{{ledYlwSts}}</a>
-               <a href = "/connect/connect" class = "wideButton" id="connBtn">{{ConnSts}}</a>
+               <a href = "/powerSts/toggle" class = "wideButton" id="powerBtn">{{powerSts}}</a>
+               <a href = "/connSts/conn" class = "wideButton" id="connBtn">{{connSts}}</a>
             </div> 
             <div  class = "innerButtons">
                 <a href="/switchMode/on"class="nrwButton" id="GrnBtn">{{mode}}</a>
-                  <form action = "/data" class = "nrwButton" id = "RedIn" method = "POST">
-                    <input type="text" class = "input" maxlength="3" max="255" name = "field">
+                  <form action = "/data/red" class = "nrwButton" id = "RedIn" method = "POST">
+                    <input type="text" value = "{{redValu}}" class = "input" maxlength="3" max="255" name = "field">
                   </form>
-                  <form action = "/data" class = "nrwButton" id = "GrnIn" method = "POST">
-                    <input type="text" class = "input" maxlength="3" max="255" name = "field">
+                  <form action = "/data/grn" class = "nrwButton" id = "GrnIn" method = "POST">
+                    <input type="text" value = "{{grnValu}}" class = "input" maxlength="3" max="255" name = "field">
                   </form>
-                  <form action = "/data" class = "nrwButton" id = "BluIn" method = "POST">
-                    <input type="text" class = "input" maxlength="3" max="255" name = "field">
+                  <form action = "/data/blu" class = "nrwButton" id = "BluIn" method = "POST">
+                    <input type="text" value = "{{bluValu}}" class = "input" maxlength="3" max="255" name = "field">
                   </form>
             </div>
             <div class = "innerButtons">
