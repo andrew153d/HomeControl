@@ -24,7 +24,9 @@ currentMode = 'A'
 
 #initialize GPIO status variables
 ledYlwSts = 0
-
+redValu = 0
+grnValu = 0
+bluValu = 0
 
 # Define led pins as output
 
@@ -35,6 +37,11 @@ GPIO.setup(ledYlw, GPIO.OUT)
 GPIO.output(ledYlw, GPIO.LOW)
 
 mqtt_client = mqtt.Client()
+form_data = {
+'field' : 'field_value',
+'mode'      : currentMode,
+}
+
 
 def on_connect(client, userdata, flags, rc):
     """ The callback for when the client receives a CONNACK response from the server."""
@@ -46,14 +53,45 @@ def on_message(client, userdata, msg):
     """The callback for when a PUBLISH message is received from the server."""
     print(msg.topic + ' ' + str(msg.payload))
 
+def getstr(input):
+	msg = ''
+	if int(input) < 10:
+		msg+='0'
+	if int(input) < 100:
+		msg+='0'
+	msg+=input
+	return msg
+
+
+@app.route('/data', methods = ['POST', 'GET'])
+def data():
+	global form_data
+	msg = currentMode
+	if request.method == 'GET':
+		return f"The URL /data is accessed directly. Try going to '/form' to submit form"
+	if request.method == 'POST':
+		form_data = request.form
+		red = form_data['red_field']
+		msg += getstr(red)
+		grn = form_data['grn_field']
+		msg += getstr(grn)
+		blu = form_data['blu_field']
+		msg+= getstr(blu)
+		mqtt_client.publish(MQTT_TOPIC, msg)
+
+
+
+
+	templateData = {
+		'mode':currentMode,
+	}
+	return render_template('index.html',**templateData)
+
 @app.route("/")
 def index():
 	# Read Sensors Status
 	ledYlwSts = GPIO.input(ledYlw)
-	
-
 	templateData = {
-              'title' : 'GPIO output Status!',
               'ledYlw'  : ledYlwSts,
               'mode'    : currentMode,
         }
