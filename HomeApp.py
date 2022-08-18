@@ -38,7 +38,9 @@ GPIO.setup(ledYlw, GPIO.OUT)
 
 
 # turn leds OFF 
-GPIO.output(ledYlw, GPIO.LOW)
+GPIO.output(ledYlw, GPIO.HIGH)
+time.sleep(1);
+GPIO.output(ledYlw, GPIO.LOW);
 
 mqtt_client = mqtt.Client()
 form_data = {
