@@ -1,5 +1,5 @@
 #include <FastLED.h>
-
+FASTLED_USING_NAMESPACE
 #define LED_PIN     2
 #define NUM_LEDS    89
 #define BRIGHTNESS  255
@@ -7,6 +7,7 @@
 #define COLOR_ORDER GRB
 CRGB leds[NUM_LEDS];
 #define UPDATES_PER_SECOND 100
+
 
 class RGBcolor{
   public:
@@ -37,9 +38,68 @@ const unsigned int MAX_INPUT = 50;
 RGBcolor rgb;
 HSVcolor hsv;
 
-char currentMode = 'B';
+
+uint8_t gHue = 0;
+void rainbow() 
+{
+  // FastLED's built-in rainbow generator
+  fill_rainbow( leds, NUM_LEDS, gHue, 7);
+}
+
+void rainbowWithGlitter() 
+{
+  // built-in FastLED rainbow, plus some random sparkly glitter
+  rainbow();
+  addGlitter(80);
+}
+
+void addGlitter( fract8 chanceOfGlitter) 
+{
+  if( random8() < chanceOfGlitter) {
+    leds[ random16(NUM_LEDS) ] += CRGB::White;
+  }
+}
+
+void confetti() 
+{
+  // random colored speckles that blink in and fade smoothly
+  fadeToBlackBy( leds, NUM_LEDS, 10);
+  int pos = random16(NUM_LEDS);
+  leds[pos] += CHSV( gHue + random8(255), 200, 255);
+}
+
+void sinelon()
+{
+  // a colored dot sweeping back and forth, with fading trails
+  fadeToBlackBy( leds, NUM_LEDS, 20);
+  int pos = beatsin16( 13, 0, NUM_LEDS-1 );
+  leds[pos] += CHSV( gHue, 255, 192);
+}
+
+void bpm()
+{
+  // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
+  uint8_t BeatsPerMinute = 62;
+  CRGBPalette16 palette = PartyColors_p;
+  uint8_t beat = beatsin8( BeatsPerMinute, 64, 255);
+  for( int i = 0; i < NUM_LEDS; i++) { //9948
+    leds[i] = ColorFromPalette(palette, gHue+(i*2), beat-gHue+(i*10));
+  }
+}
+
+void juggle() {
+  // eight colored dots, weaving in and out of sync with each other
+  fadeToBlackBy( leds, NUM_LEDS, 20);
+  byte dothue = 0;
+  for( int i = 0; i < 8; i++) {
+    leds[beatsin16( i+7, 0, NUM_LEDS-1 )] |= CHSV(dothue, 200, 255);
+    dothue += 32;
+  }
+}
+
+char currentMode = 'E';
 int counter = 0;
- char data[14];
+char data[14];
 int LEDindex = 0;
 CHSV color[NUM_LEDS];
 int widthIndex = 20;
@@ -47,6 +107,8 @@ int widthIndex = 20;
 int Lindex;
 int Rindex;
 
+int index[4];
+CRGB colorI[4];
 
 double max_element(RGBcolor in){
   double a = (double)max(in.R, in.G);
@@ -152,6 +214,11 @@ void loop() {
           Lindex = 60;
           Rindex = 61;
         break;
+        case 'E':
+          for(int i = 0; i<4; i++){
+            index[i] = random(0, NUM_LEDS-10);
+          }
+        break;
        }
       }
       counter = 0;
@@ -194,31 +261,27 @@ void loop() {
       case 'D':
       //LEDindex = 2;
       //index = random(0, NUM_LEDS);  
-      hsv.H = 125;
+      //hsv.H = 125;
       Lindex--;
       if(Lindex<0){
         Lindex = NUM_LEDS-1;
       }
       if(Lindex == Rindex){
-        Serial.println(" ---------equals---------");
-        hsv.H+=40;
-        hsv.H = hsv.H%255;
+        Serial.println(" ---------equals1--------");
+        hsv.H=random(0, 255);
+        Lindex = random(0, NUM_LEDS-5);
+        Rindex = Lindex+1;
       }
       Rindex++;
       Rindex%=NUM_LEDS;
       if(Lindex == Rindex){
-        Serial.println(" ---------equals---------");
-        hsv.H+=20;
-        hsv.H = hsv.H%255;
+        Serial.println(" ---------equals2--------");
+        hsv.H=random(0, 255);
+        Lindex = random(0, NUM_LEDS-5);
+        Rindex = Lindex+1;
       }
       leds[Lindex] = CHSV(hsv.H, 255, 255);
       leds[Rindex] = CHSV(hsv.H, 255, 255);
-      
-      
-      
-      
-     
-      
       //widthIndex++;
       //if(widthIndex>=NUM_LEDS/2){
       //  widthIndex = 0;
@@ -226,8 +289,14 @@ void loop() {
       ////  hsv.H = random(0, 255);
       //  Serial.println("resetting counter");
       //}
-      delay(100);
-      break;    
+      delay(50);
+      break;   
+      case 'E':
+        //rainbow, rainbowWithGlitter, confetti, sinelon, juggle, bpm
+        sinelon();
+        delay(30);
+        EVERY_N_SECONDS( 5 ) { gHue+=random(20, 40); }
+       break;
     }
     FastLED.show();
   }
