@@ -11,8 +11,10 @@ const char* mqtt_server = "192.168.12.218";  // IP of the MQTT broker
 const char* test_topic = "home/office/test";
 const char* mqtt_username = "cdavid"; // MQTT username
 const char* mqtt_password = "cdavid"; // MQTT password
-const char* clientID = "client_test"; // MQTT client ID
+const char* clientID = "ESPclient"; // MQTT client ID
 bool state = 0;
+int nowTime;
+int lastMsgTime;
 
 void callback(char* topic, byte* payload, unsigned int length) {
   for(int i = 0; i<length; i++){
@@ -30,14 +32,42 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print(" length: ");
   Serial.println(length);
   #endif
-  digitalWrite(LED_BUILTIN, state);
-  state = !state;
+  digitalWrite(LED_BUILTIN, LOW);
+  //state = !state;
+  lastMsgTime = nowTime;
   }
-
+  
 // Initialise the WiFi and MQTT Client objects
 WiFiClient wifiClient;
 // 1883 is the listener port for the Broker
 PubSubClient client(mqtt_server, 1883, callback, wifiClient); 
+
+
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Create a random client ID
+    // Attempt to connect
+    if (client.connect(clientID, mqtt_username, mqtt_password)) {
+      Serial.println("connected");
+      // Once connected, publish an announcement...
+      client.publish("outTopic", "hello world");
+      // ... and resubscribe
+      client.subscribe(test_topic);
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 2 seconds");
+      // Wait 5 seconds before retrying
+      delay(2000);
+    }
+  }
+}
+
+
+
+
 
 void WifiConnect(){
   #ifdef DEBUG
@@ -94,20 +124,20 @@ void setup() {
 }
 
 void loop() {
-  connect_MQTT();
-  Serial.setTimeout(500);
+  nowTime = millis();
+
+  if(nowTime>lastMsgTime+100){
+    digitalWrite(LED_BUILTIN, HIGH);
+  }
+  
+  //connect_MQTT();
+  if (!client.connected()) {
+    reconnect();
+  }
   if(!client.subscribe(test_topic)){
     #ifdef DEBUG
     Serial.println("ERR: subscription Failed");
     #endif
   }
-   //for( int i = 0; i < NUM_LEDS; i++) {
-   //     leds[i] = CRGB(100, 10, 10);
-   //}
-  // FastLED.show();
-   //FastLED.delay(1000 / UPDATES_PER_SECOND);
-
-  
   client.loop();
-  delay(100);
 }
