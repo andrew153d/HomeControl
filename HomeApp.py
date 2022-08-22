@@ -60,7 +60,10 @@ def on_message(client, userdata, msg):
     print(msg.topic + ' ' + str(msg.payload))
 
 def sendColors():
-
+	mqtt_client.connect(MQTT_ADDRESS, 1883)
+	mqtt_client.loop_start()
+	mqtt_client.subscribe(MQTT_TOPIC)
+	
 	def getStr(input):
 		msg = ''
 		if int(input) < 10:
@@ -79,7 +82,7 @@ def sendColors():
 	msg+=getStr(grnValu)
 	msg+=getStr(bluValu)
 	mqtt_client.publish(MQTT_TOPIC, msg)
-
+	mqtt_client.loop_stop()
 
 @app.route('/data/<color>', methods = ['POST', 'GET'])
 def data(color):
@@ -174,10 +177,7 @@ def main():
     mqtt_client.username_pw_set(MQTT_USER, MQTT_PASSWORD)
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
-
-    mqtt_client.connect(MQTT_ADDRESS, 1883)
-    #publish(mqtt_client)
-    mqtt_client.loop()
+    print("Running")
 
 if __name__ == "__main__":
     main()
