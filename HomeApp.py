@@ -10,7 +10,7 @@ MQTT_ADDRESS = '192.168.12.218'
 MQTT_USER = 'cdavid'
 MQTT_PASSWORD = 'cdavid'
 MQTT_TOPIC = 'home/office/test'
-
+MQTT_IF_TOPIC = 'home/internet_fan'
 
 app = Flask(__name__)
 
@@ -53,6 +53,7 @@ def on_connect(client, userdata, flags, rc):
     """ The callback for when the client receives a CONNACK response from the server."""
     print('Connected with result code ' + str(rc))
     client.subscribe(MQTT_TOPIC)
+    client.subscribe(MQTT_IF_TOPIC)
 
 
 def on_message(client, userdata, msg):
@@ -63,6 +64,7 @@ def sendColors():
 	mqtt_client.connect(MQTT_ADDRESS, 1883)
 	mqtt_client.loop_start()
 	mqtt_client.subscribe(MQTT_TOPIC)
+	mqtt_client.subscribe(MQTT_IF_TOPIC)
 	
 	def getStr(input):
 		msg = ''
@@ -82,6 +84,7 @@ def sendColors():
 	msg+=getStr(grnValu)
 	msg+=getStr(bluValu)
 	mqtt_client.publish(MQTT_TOPIC, msg)
+	mqtt_client.publish(MQTT_IF_TOPIC, "4")
 	mqtt_client.loop_stop()
 
 @app.route('/data/<color>', methods = ['POST', 'GET'])
