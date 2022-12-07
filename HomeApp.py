@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 from flask import Flask, render_template, request
 
 
-MQTT_ADDRESS = '192.168.12.218'
+MQTT_ADDRESS = '192.168.12.217'
 MQTT_USER = 'cdavid'
 MQTT_PASSWORD = 'cdavid'
 MQTT_TOPIC = 'home/office/test'
