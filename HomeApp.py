@@ -15,6 +15,7 @@ MQTT_IF_TOPIC = 'home/internet_fan'
 
 app = Flask(__name__)
 
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
