@@ -12,6 +12,7 @@ MQTT_PASSWORD = 'cdavid'
 MQTT_TOPIC = 'home/office/test'
 MQTT_IF_TOPIC = 'home/internet_fan'
 
+
 app = Flask(__name__)
 
 GPIO.setmode(GPIO.BCM)
