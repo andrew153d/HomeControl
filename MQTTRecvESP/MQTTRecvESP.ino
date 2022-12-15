@@ -7,7 +7,7 @@ const char* ssid = "GrowWifi";
 const char* wifi_password = "T4*15KpHi1bj";
 
 // MQTT
-const char* mqtt_server = "192.168.12.218";  // IP of the MQTT broker
+const char* mqtt_server = "192.168.12.217";  // IP of the MQTT broker
 const char* test_topic = "home/office/test";
 const char* mqtt_username = "cdavid"; // MQTT username
 const char* mqtt_password = "cdavid"; // MQTT password
