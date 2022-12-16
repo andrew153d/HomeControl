@@ -8,7 +8,7 @@ const char* wifi_password = "T4*15KpHi1bj";
 
 // MQTT
 const char* mqtt_server = "192.168.12.217";  // IP of the MQTT broker
-const char* test_topic = "home/office/test";
+const char* test_topic = "home/office/deskLights";
 const char* mqtt_username = "cdavid"; // MQTT username
 const char* mqtt_password = "cdavid"; // MQTT password
 const char* clientID = "ESPclient"; // MQTT client ID
@@ -17,10 +17,27 @@ int nowTime;
 int lastMsgTime;
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  for(int i = 0; i<length; i++){
-    Serial.print((char)payload[i]);
+  //for(int i = 0; i<length; i++){
+  //  Serial.print((char)payload[i]);
+  //}
+  if(length == 10){
+    Serial.print((char)payload[0]);
+    Serial.print(',');
+    Serial.print((char)payload[1]);
+    Serial.print((char)payload[2]);
+    Serial.print((char)payload[3]);
+    Serial.print('<');
+    Serial.print((char)payload[4]);
+    Serial.print((char)payload[5]);
+    Serial.print((char)payload[6]);
+    Serial.print('>');
+    Serial.print((char)payload[7]);
+    Serial.print((char)payload[8]);
+    Serial.print((char)payload[9]);
+    Serial.print('.');
+    Serial.print('\n');
   }
-  Serial.print('\n');
+  //A,101,102,103,
   #ifdef DEBUG
   Serial.println("");
   Serial.print("recvd Data: ");
