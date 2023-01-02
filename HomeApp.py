@@ -1,10 +1,9 @@
 import paho.mqtt.client as mqtt
 import time
-
 import RPi.GPIO as GPIO
-
 from flask import Flask, render_template, request
-
+from werkzeug.exceptions import BadRequestKeyError
+import psutil
 
 MQTT_ADDRESS = '192.168.12.217'
 MQTT_USER = 'cdavid'
@@ -19,14 +18,9 @@ app = Flask(__name__)
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-#define actuators GPIOs
-ledYlw = 26
+
 currentMode = 'A'
-
-
-#initialize GPIO status variables
-ledYlwSts = 0
-
+cpu_load = '0'
 redValu = '0'
 grnValu = '0'
 bluValu = '0'
@@ -34,22 +28,26 @@ bluValu = '0'
 connSts = "Disconnected"
 powerSts = "OFF"
 
-# Define led pins as output
 
-GPIO.setup(ledYlw, GPIO.OUT) 
-
-
-# turn leds OFF 
-GPIO.output(ledYlw, GPIO.HIGH)
-time.sleep(1);
-GPIO.output(ledYlw, GPIO.LOW);
 
 mqtt_client = mqtt.Client()
+
 form_data = {
 'field' : 'field_value',
 'mode'      : currentMode,
 }
 
+templateData = {
+
+		'mode':currentMode,
+		'redValu':redValu,
+		'grnValu':grnValu,
+		'bluValu':bluValu,
+		'powerSts':powerSts,
+		'connSts':connSts,
+		'cpu_load':cpu_load,
+		
+	}
 
 def on_connect(client, userdata, flags, rc):
     """ The callback for when the client receives a CONNACK response from the server."""
@@ -63,10 +61,12 @@ def on_message(client, userdata, msg):
     print(msg.topic + ' ' + str(msg.payload))
 
 def sendColors():
+	global powerSts
+	
+		
 	mqtt_client.connect(MQTT_ADDRESS, 1883)
 	mqtt_client.loop_start()
 	mqtt_client.subscribe(MQTT_TOPIC)
-	mqtt_client.subscribe(MQTT_IF_TOPIC)
 	
 	def getStr(input):
 		msg = ''
@@ -77,26 +77,32 @@ def sendColors():
 		msg+=input
 		return msg
 
-	global redValu
-	global grnValu
-	global bluValu
-	global currentMode
 	msg = currentMode
 	msg+=getStr(redValu)
 	msg+=getStr(grnValu)
 	msg+=getStr(bluValu)
-	mqtt_client.publish(MQTT_TOPIC, msg)
-	mqtt_client.publish(MQTT_IF_TOPIC, "4")
+	print(powerSts)
+	if(powerSts == "OFF"):
+		mqtt_client.publish(MQTT_TOPIC, 'A000000000')
+	else:
+		mqtt_client.publish(MQTT_TOPIC, msg)
+	
 	mqtt_client.loop_stop()
 
-@app.route('/data/<color>', methods = ['POST', 'GET'])
+@app.route('/data/<color>', methods = ['POST'])
+def handleColorInput(color):
+	return('', 200)
+
+@app.route('/data/<color>', methods = ['GET'])
 def data(color):
 	global form_data
-	global powerSts
-	global connStatus
+	global templateData
 	global redValu
 	global grnValu
 	global bluValu
+	global connSts
+	global powerSts
+	global currentMode
 	msg = currentMode
 	if request.method == 'GET':
 		return f"The URL /data is accessed directly. Try going to '/form' to submit form"
@@ -110,79 +116,94 @@ def data(color):
 			bluValu = form_data['field']
 
 		sendColors()
+	return render_template('index.html',**templateData)
+
+def get_template():
+	global currentMode
+	global redValu
+	global grnValu
+	global bluValu
+	global powerSts
+	global connSts
+	global cpu_load
 	templateData = {
+
 		'mode':currentMode,
 		'redValu':redValu,
 		'grnValu':grnValu,
 		'bluValu':bluValu,
 		'powerSts':powerSts,
 		'connSts':connSts,
+		'cpu_load':cpu_load,
 		
 	}
-	return render_template('index.html',**templateData)
+	return templateData
 
-@app.route("/")
-def index():
-	# Read Sensors Status
-	ledYlwSts = GPIO.input(ledYlw)
-	templateData = {
-              'ledYlw'  : ledYlwSts,
-              'mode'    : currentMode,
-        }
-	return render_template('index.html', **templateData)
-	
-@app.route("/<deviceName>/<action>")
-def action(deviceName, action):
+def extractColor(form_data):
 	global redValu
 	global grnValu
 	global bluValu
-	global currentMode
-	global powerSts
+	# for key in form_data.keys():
+	#	print(key)
+	# first = next(iter(form_data))
+	# Get the first key-value pair from the dictionary
+	try:
+		first_pair = next(iter(form_data))
+		if   first_pair == 'rfield':
+			redValu = form_data['rfield']
+		elif first_pair == 'gfield':
+			grnValu = form_data['gfield']
+		elif first_pair == 'bfield':
+			bluValu = form_data['bfield']
+		sendColors()
+	except(StopIteration):
+		pass
+
+
+@app.route("/", methods = ['POST', 'GET'])
+def index():
+	extractColor(request.form)
+	
+	template_data = get_template()
+	return render_template('index.html', **template_data)
+	
+@app.route("/<deviceName>/<action>")
+def action(deviceName, action):
+	global form_data
+	global templateData
+	global redValu
+	global grnValu
+	global bluValu
 	global connSts
+	global powerSts
+	global currentMode
+
 	if deviceName == 'connSts':
 		if action == 'conn':
 			if connSts == "Disconnected":
 				connSts = "Connected"
 				mqtt_client.connect(MQTT_ADDRESS, 1883)
-				GPIO.output(ledYlw, GPIO.HIGH)
 			elif connSts == "Connected":
 				connSts = "Disconnected"
-				GPIO.output(ledYlw, GPIO.LOW)
-			print(connSts == "Disconnected")
 	if deviceName == 'powerSts':
 		if action == 'toggle':
 			if powerSts == "ON":
 				powerSts = "OFF"
-				redValu = '0'
-				grnValu = '0'
-				bluValu = '0'
-				sendColors()
 			elif powerSts == "OFF":
 				powerSts = "ON"
+			sendColors()
 	if deviceName == 'switchMode':
 		currentMode = chr(ord(currentMode)+1)
 		if currentMode == 'G':
 			currentMode = 'A'
 		sendColors()
-
-	ledYlwSts = GPIO.input(ledYlw)
-	templateData = {
-              'ledYlw'  : ledYlwSts,
-              'mode'    : currentMode,
-              'redValu' : redValu,
-              'grnValu' : grnValu,
-              'bluValu' : bluValu,
-              'connSts' : connSts,
-              'powerSts': powerSts,
-	}
-	return render_template('index.html', **templateData)
+	template_data = get_template()
+	return render_template('index.html', **template_data)
 
 def main():
-    
     mqtt_client.username_pw_set(MQTT_USER, MQTT_PASSWORD)
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
-    print("Running")
 
 if __name__ == "__main__":
     main()
