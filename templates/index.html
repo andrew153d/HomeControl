@@ -1,83 +1,113 @@
-
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../static/bootstrap.min.css">
-    <link rel="stylesheet" href="../static/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap" rel="stylesheet">
-    <title>Home Controller</title>
-    
-  </head>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../static/bootstrap.min.css">
+  <link rel="stylesheet" href="../static/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300;400;700&display=swap" rel="stylesheet">
+  <title>Home Controller</title>
+
+</head>
+
 <body>
   <header>
     <nav id="header-nav" class="navbar navbar-default">
       <div class="container">
-            <a href=index.html class=""><h1>Grow Home Control</h1></a>
+        <a href=index.html class="">
+          <h1>Grow Home Control</h1>
+        </a>
       </div>
     </nav>
   </header>
 
- <div id="main-content" class="container">
-    <section class="container" class="row" id="box">
+  <div id="main-content" class="container">
+    <section class="row" id="box">
       <div class="col-md-4 col-sm-12 col-xs-12" id="col1">
         <article>
           <h4 class="text-center">Desk Leds</h4>
-            <div  class = "innerButtons">
-               <a href = "/powerSts/toggle" class = "wideButton" id="powerBtn">{{powerSts}}</a>
-               <a href = "/connSts/conn" class = "wideButton" id="connBtn">{{connSts}}</a>
-            </div> 
-            <div  class = "innerButtons">
-                <a href="/switchMode/on"class="nrwButton" id="GrnBtn">{{mode}}</a>
-                  <form action = "/" class = "nrwButton" id = "RedIn" method = "POST">
-                    <input type="text" value = "{{redValu}}" class = "input" maxlength="3" max="255" name = "rfield">
-                  </form>
-                  <form action = "/" class = "nrwButton" id = "GrnIn" method = "POST">
-                    <input type="text" value = "{{grnValu}}" class = "input" maxlength="3" max="255" name = "gfield">
-                  </form>
-                  <form action = "/" class = "nrwButton" id = "BluIn" method = "POST">
-                    <input type="text" value = "{{bluValu}}" class = "input" maxlength="3" max="255" name = "bfield">
-                  </form>
+          <div class="innerButtons">
+            <a href="/powerSts/toggle" class="wideButton" id="powerBtn">{{powerSts}}</a>
+            <a href="/connSts/conn" class="wideButton" id="connBtn">{{connSts}}</a>
+          </div>
+          <div class="container innerRow">
+            <div class="innerButtons row">
+              <div class="col-3">
+                <a href="/switchMode/on" class="nrwButton" id="GrnBtn">{{mode}}</a>
+              </div>
+              <div class="col-3">
+                <form action="/" class="nrwButton" id="RedIn" method="POST" autocomplete="off">
+                  <input type="text" value="{{redValu}}" class="input" maxlength="3" max="255" name="rfield">
+                </form>
+              </div>
+              <div class="col-3">
+                <form action="/" class="nrwButton" id="GrnIn" method="POST" autocomplete="off">
+                  <input type="text" value="{{grnValu}}" class="input" maxlength="3" max="255" name="gfield">
+                </form>
+              </div>
+              <div class="col-3">
+                <form action="/" class="nrwButton" id="BluIn" method="POST" autocomplete="off">
+                  <input type="text" value="{{bluValu}}" class="input" maxlength="3" max="255" name="bfield">
+                </form>
+              </div>
             </div>
-            <div class = "innerButtons">
-              Device Command
-            </div>
+          </div>
+
+          <div class="innerButtons">
+            <form action="/" method="POST" autocomplete="off">
+              <input type="hidden" name="light" value="optionA">
+              <button type="submit" class="nrwButton submit_Btn" id="optionA"></button>
+            </form>
+            <form action="/" method="POST" autocomplete="off">
+              <input type="hidden" name="light" value="optionB">
+              <button type="submit" class="nrwButton submit_Btn" id="optionB"></button>
+            </form>
+            <form action="/" method="POST" autocomplete="off">
+              <input type="hidden" name="light" value="optionC">
+              <button type="submit" class="nrwButton submit_Btn" id="optionC"></button>
+            </form>
+            <form action="/" method="POST" autocomplete="off">
+              <input type="hidden" name="light" value="optionD">
+              <button type="submit" class="nrwButton submit_Btn" id="optionD"></button>
+            </form>
+          </div>
+
         </article>
       </div>
       <div class="col-md-4 col-sm-12 col-xs-12" id="col1">
         <article>
           <h4 class="text-center">Raspberry Pi</h4>
-            <div class = "innerButtons">
-              <form action="/" method = "POST">
-                <input type="hidden" name="key1" value="value1">
-                <button type="submit" class = "wideButton submit_Btn">{{cpu_temp}}</button>
-              </form>
-              <form action="/" method = "POST">
-                <input type="hidden" name="key2" value="value2">
-                <button type="submit" class = "wideButton submit_Btn">{{cpu_load}}</button>
-              </form>
-            </div>
-            <div class = "innerButtons">
-              {{num_conn_dev}}
-            </div>
-            <div class = "innerButtons">
-              Device Command
-            </div>
+          <div class="innerButtons">
+            <form action="/" method="POST" autocomplete="off">
+              <input type="hidden" name="key1" value="value1">
+              <button type="submit" class="wideButton submit_Btn">{{cpu_temp}}</button>
+            </form>
+            <form action="/" method="POST" autocomplete="off">
+              <input type="hidden" name="key2" value="value2">
+              <button type="submit" class="wideButton submit_Btn">{{cpu_load}}</button>
+            </form>
+          </div>
+          <div class="innerButtons">
+            {{num_conn_dev}}
+          </div>
+          <div class="innerButtons">
+            Device Command
+          </div>
         </article>
       </div>
       <div class="col-md-4 col-sm-12 col-xs-12" id="col1">
         <article>
           <h4 class="text-center">Device 3</h4>
-            <div class = "innerButtons">
-              Device Command
-            </div>
-            <div class = "innerButtons">
-              Device Command
-            </div>
-            <div class = "innerButtons">
-              Device Command
-            </div>
+          <div class="innerButtons">
+            Device Command
+          </div>
+          <div class="innerButtons">
+            Device Command
+          </div>
+          <div class="innerButtons">
+            Device Command
+          </div>
         </article>
       </div>
     </section>
@@ -85,4 +115,5 @@
 
 
 </body>
+
 </html>

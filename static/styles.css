@@ -69,11 +69,14 @@ section>div{
   height:  80px;
   background-color:  #7c7c7c;
   border-radius: 40px;
-  margin:  15px;
+  margin-top: 15px;
   padding: 15px;
   font-size:  1.3em;
 }
 
+.innerRow{
+  width: 100%
+}
 
 .nrwButton{
 
@@ -89,7 +92,7 @@ section>div{
   white-space: nowrap;
   overflow: hidden;
   float:  left;
-  margin-left:  15px;
+  /*margin-left:  15px;*/
 }
 
 .wideButton{
@@ -174,3 +177,18 @@ input[type="text"]{
   border: none;
 }
 
+#optionA{
+  background-color: white;
+}
+
+#optionB{
+  background-color:rgb(1, 176, 176);
+}
+
+#optionC{
+  background-color:rgb(21, 163, 21);
+}
+
+#optionD{
+  background-color:rgb(172, 2, 172);
+}
