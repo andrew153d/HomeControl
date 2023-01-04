@@ -10,6 +10,7 @@ MQTT_USER = 'cdavid'
 MQTT_PASSWORD = 'cdavid'
 MQTT_TOPIC = 'home/office/deskLights'
 MQTT_IF_TOPIC = 'home/internet_fan'
+MQTT_CLIENTS = '$SYS/broker/clients/total'
 
 
 app = Flask(__name__)
@@ -27,7 +28,7 @@ bluValu = '0'
 
 connSts = "Disconnected"
 powerSts = "OFF"
-
+num_connected_devices = 1
 
 
 mqtt_client = mqtt.Client()
@@ -50,10 +51,11 @@ templateData = {
 	}
 
 def on_connect(client, userdata, flags, rc):
-    """ The callback for when the client receives a CONNACK response from the server."""
-    print('Connected with result code ' + str(rc))
-    client.subscribe(MQTT_TOPIC)
-    client.subscribe(MQTT_IF_TOPIC)
+	""" The callback for when the client receives a CONNACK response from the server."""
+	print('Connected with result code ' + str(rc))
+	client.subscribe(MQTT_TOPIC)
+	client.subscribe(MQTT_IF_TOPIC)
+	client.subscribe(MQTT_CLIENTS)
 
 
 def on_message(client, userdata, msg):
@@ -118,6 +120,11 @@ def data(color):
 		sendColors()
 	return render_template('index.html',**templateData)
 
+def get_cpu_temp():
+    with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
+        temp = float(f.read()) / 1000
+    return temp
+
 def get_template():
 	global currentMode
 	global redValu
@@ -125,7 +132,9 @@ def get_template():
 	global bluValu
 	global powerSts
 	global connSts
-	global cpu_load
+	global num_connected_devices
+	cpu_temp = get_cpu_temp()
+	cpu_load = psutil.cpu_percent()
 	templateData = {
 
 		'mode':currentMode,
@@ -134,7 +143,9 @@ def get_template():
 		'bluValu':bluValu,
 		'powerSts':powerSts,
 		'connSts':connSts,
-		'cpu_load':cpu_load,
+		'cpu_load':str(cpu_load)+'%',
+		'cpu_temp':str(round(cpu_temp))+chr(176)+'C',
+		'num_conn_dev': num_connected_devices,
 		
 	}
 	return templateData

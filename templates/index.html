@@ -47,12 +47,19 @@
       </div>
       <div class="col-md-4 col-sm-12 col-xs-12" id="col1">
         <article>
-          <h4 class="text-center">Rasberry Pi</h4>
+          <h4 class="text-center">Raspberry Pi</h4>
             <div class = "innerButtons">
-              Device Command
+              <form action="/" method = "POST">
+                <input type="hidden" name="key1" value="value1">
+                <button type="submit" class = "wideButton submit_Btn">{{cpu_temp}}</button>
+              </form>
+              <form action="/" method = "POST">
+                <input type="hidden" name="key2" value="value2">
+                <button type="submit" class = "wideButton submit_Btn">{{cpu_load}}</button>
+              </form>
             </div>
             <div class = "innerButtons">
-              Device Command
+              {{num_conn_dev}}
             </div>
             <div class = "innerButtons">
               Device Command
